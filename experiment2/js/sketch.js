@@ -1,6 +1,6 @@
-// sketch.js - purpose and description here
-// Author: Your Name
-// Date:
+// sketch.js - Experiment 2: The creation of a unique creative code using vectors, animation, and interactivity
+// Author: Jacky Chen
+// Date: 1/22/2024
 
 // Here is how you might set up an OOP p5.js project
 // Note that p5.js looks for a file called sketch.js
@@ -25,6 +25,12 @@ class MyClass {
     }
 }
 
+let trail = [];
+let trail2 = [];
+let squareSize = 30;
+let mouseTrack = 0;
+let distance = 0;
+
 // setup() function is called once when the program starts
 function setup() {
     // place our canvas, making it fit our container
@@ -45,23 +51,66 @@ function setup() {
 
 // draw() function is called repeatedly, it's the main animation loop
 function draw() {
-    background(220);    
-    // call a method on the instance
-    myInstance.myMethod();
+  background(0);
 
-    // Put drawings here
-    var centerHorz = canvasContainer.width() / 2 - 125;
-    var centerVert = canvasContainer.height() / 2 - 125;
-    fill(234, 31, 81);
+  if(mouseTrack > windowWidth /2 +200){
+    distance+=5;
+    translate(distance,0);
+  }
+  else if(mouseTrack < windowWidth /2 -200){
+    distance-=5;
+    translate(distance,0);
+  }
+  else{
+    translate(distance,0);
+  }
+
+  // Update the trail array with a new particle
+  trail.push({ x: random(width), y: random(height), size: random(20,50) });
+  trail.push({ x: random(width), y: random(height), size: random(20,50) });
+  trail2.push({ x: mouseX+(distance*-1), y: mouseY, size: squareSize });
+
+  // Draw squares from the trail
+  for (let i = 0; i < trail.length; i++) {
+    let alpha = map(i, 0, trail.length, 255, 0);
+    fill(random(255), random(255), random(255), alpha);
     noStroke();
-    rect(centerHorz, centerVert, 250, 250);
-    fill(255);
-    textStyle(BOLD);
-    textSize(140);
-    text("p5*", centerHorz + 10, centerVert + 200);
+    rectMode(CENTER);
+    rect(trail[i].x, trail[i].y, trail[i].size, trail[i].size);
+
+    // Shrink the size of each square
+    trail[i].size *= 0.97;
+  }
+  for (let i = 0; i < trail2.length; i++) {
+    let alpha = map(i, 0, trail2.length, 255, 0);
+    fill(random(255), random(255), random(255), alpha);
+    noStroke();
+    rectMode(CENTER);
+    rect(trail2[i].x, trail2[i].y, trail2[i].size, trail2[i].size);
+
+    // Shrink the size of each square
+    trail2[i].size *= 0.97;
+  }
+
+  // Remove squares that have shrunk too much
+  trail = trail.filter(square => square.size > 1);
+  trail2 = trail2.filter(square => square.size > 1);
+
+  mouseTrack = mouseX;
 }
 
 // mousePressed() function is called once after every time a mouse button is pressed
 function mousePressed() {
     // code to run when mouse is pressed
 }
+
+function keyPressed() {
+    // Press 'UP' arrow key to increase the square size
+    if (keyCode === UP_ARROW) {
+      squareSize += 5;
+    }
+    // Press 'DOWN' arrow key to decrease the square size
+    else if (keyCode === DOWN_ARROW && squareSize > 5) {
+      squareSize -= 5;
+    }
+  }

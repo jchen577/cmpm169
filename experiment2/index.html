@@ -2,7 +2,7 @@
 <html>
 <head>
 	<!-- This title is used for tabs and bookmarks -->
-	<title>Experiment X - Subject/Topic</title>
+	<title>Experiment 2 - Vectors/Interactivity/Animation</title>
 
 	<!-- Use UTF character set, a good idea with any webpage -->
 	<meta charset="UTF-8" />
@@ -28,33 +28,116 @@
 	<!-- Style this page by changing the CSS in ../css/site.css or css/experiment.css -->
 	<main id="content">
 		<section>
-			<h1>Experiment X - Subject/Topic</h1>
+			<h1>Experiment 2 - Vectors/Interactivity/Animation</h1>
 			<div class="minor-section">
 				<h2>Imitate</h2>
-				<p>To develop artistic creativity in coding, it can be helpful to start by studying and learning from existing examples. This might involve reviewing code written by others, analyzing successful techniques, or even copying and modifying code to better understand how it works. By imitating and learning from existing techniques and strategies, we can gain a better understanding of what has been done before and what is possible, and identify opportunities for improvement and innovation.</p>
-				<p>What code did you start with? (You don't need to provide the code itself, but where did you start?) Document this step briefly.</p>
+				<p>I started off my experiment by asking chatGPT for code that would generate a trail of squares following the user’s mouse. The reason I chose this was because it was a cool particle effect that often appears in games as an aesthetic choice, and it also allowed me to complete the interactivity part of this assignment. The initial code that ChatGPT gave me worked, but there were a bunch of little things like color and trail length that I felt could be adjusted.
+				</p>
+				<p>The code to print a square trail is: 
+					function draw() {
+					background(255);
+				
+				  // Update the trail array with the current mouse location
+				  trail.push({ x: mouseX, y: mouseY });
+				
+				  // Draw squares from the trail
+				  for (let i = 0; i < trail.length; i++) {
+					let alpha = map(i, 0, trail.length, 255, 0);
+					fill(0, 150, 200, alpha);
+					noStroke();
+					rectMode(CENTER);
+					rect(trail[i].x, trail[i].y, 20, 20);
+				  }
+				
+				  // Limit the number of points in the trail array
+				  if (trail.length > 50) {
+					trail.splice(0, 1);
+				  }
+				}</p>
 			</div>
 
 			<div class="minor-section">
 				<h2>Integrate</h2>
-				<p>After learning from existing techniques and strategies, we can build upon that foundation by combining elements from different sources. This might involve combining elements from different programming languages, using libraries or frameworks in new ways, or bringing together techniques from different fields or disciplines. By integrating and combining elements from different sources, we can create something new and unique.</p>
-				<p>How did you extend the code or combine with another technique to make something new? Document this step.</p>
+				<p>One thing that I changed was the color of the squares because I felt that the blue trail was bland. Another change that I made was making the squares shrink faster, allowing for the visual effect to be smoother than before.
+				</p>
+				<p>let trail = [];
+
+					function setup() {
+					  createCanvas(400, 400);
+					}
+					
+					function draw() {
+					  background(255);
+					
+					  // Update the trail array with the current mouse location
+					  trail.push({ x: mouseX, y: mouseY, size: 20 });
+					
+					  // Draw squares from the trail
+					  for (let i = 0; i < trail.length; i++) {
+						let alpha = map(i, 0, trail.length, 255, 0);
+						fill(0, 150, 200, alpha);
+						noStroke();
+						rectMode(CENTER);
+						rect(trail[i].x, trail[i].y, trail[i].size, trail[i].size);
+					
+						// Shrink the size of each square
+						trail[i].size *= 0.95;
+					  }
+					
+					  // Remove squares that have shrunk too much
+					  trail = trail.filter(square => square.size > 1);
+					}
+					</p>
 			</div>
 
 			<div class="minor-section">
 				<h2>Innovate</h2>
-				<p>Finally, we can introduce new or original ideas to our coding process by thinking creatively and pushing the boundaries. This might involve developing entirely new techniques or approaches, or using existing techniques in new and creative ways. By innovating and introducing new ideas, we can create art that is truly groundbreaking.</p>
-				<p>How did you use the code as a jumping off point to create something truly unique and novel? Document this step thoroughly.</p>
+				<p>After changing the trail to be more visually appealing, I realized that the rest of the canvas was still blank, something that wasn’t common in the examples. One thing that I decided to add to spice up the canvas was to put the disappearing particles all over the screen. The goal of this was to use the existing trail code to make another function to try and make something fun. 
+				</p>
+				<p>function draw() {
+					background(255);
+				
+				
+				  // Update the trail array with a new particle
+				  trail.push({ x: random(width), y: random(height), size: random(20,50) });
+				  trail2.push({ x: mouseX, y: mouseY, size: squareSize });
+				
+				
+				  // Draw squares from the trail
+				  for (let i = 0; i < trail.length; i++) {
+					let alpha = map(i, 0, trail.length, 255, 0);
+					fill(random(255), random(255), random(255), alpha);
+					noStroke();
+					rectMode(CENTER);
+					rect(trail[i].x, trail[i].y, trail[i].size, trail[i].size);
+				
+				
+					// Shrink the size of each square
+					trail[i].size *= 0.97;
+				  }
+				  for (let i = 0; i < trail2.length; i++) {
+					let alpha = map(i, 0, trail2.length, 255, 0);
+					fill(random(255), random(255), random(255), alpha);
+					noStroke();
+					rectMode(CENTER);
+					rect(trail2[i].x, trail2[i].y, trail2[i].size, trail2[i].size);
+				
+				
+					// Shrink the size of each square
+					trail2[i].size *= 0.97;
+				  }
+				
+				
+				  // Remove squares that have shrunk too much
+				  trail = trail.filter(square => square.size > 1);
+				  trail2 = trail2.filter(square => square.size > 1);
+				</p>
 			</div>
 
 			<div class="minor-section">
 				<h2>Reflection</h2>
-				<p>Each person that worked on the code should reflect on the process, the difficulties, and the successes of the experiment. Here's where you can put your reflections.</p>
-				<ul>
-					<li>What part of the project you contributed</li>
-					<li>A reflection on your work and the work of the team</li>
-					<li>Brief highs and lows</li>
-				</ul>
+				<p>I think the lowest point of the assignment was choosing where to start. I originally did not intend to use chatGPT as a base, but I struggled to think of anything that I could do in p5.js with my current experience. So after a lot of inner struggle, I ended up using chatGPT after the professor showed examples of how to use it in class. The highest point of the assignment was the moments after I started using chatGPT. I think the reason behind this was because I could unleash the creativity in my brain without worrying about whether I could implement it or not. The end result of this assignment was satisfactory to me personally because I felt like I learned a lot about how to use p5.js, and I managed to put what was in my mind onto the screen.
+				</p>
 			</div>
 
 			<div class="minor-section">
