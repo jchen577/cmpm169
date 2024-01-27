@@ -29,12 +29,12 @@ class MyClass {
 function setup() {
     // place our canvas, making it fit our container
     canvasContainer = $("#canvas-container");
-    let canvas = createCanvas(canvasContainer.width(), canvasContainer.height());
+    let canvas = createCanvas(800, 500);
     canvas.parent("canvas-container");
     // resize canvas is the page is resized
     $(window).resize(function() {
         console.log("Resizing...");
-        resizeCanvas(canvasContainer.width(), canvasContainer.height());
+        resizeCanvas(800, 500);
     });
     // create an instance of the class
     myInstance = new MyClass(VALUE1, VALUE2);
@@ -43,23 +43,68 @@ function setup() {
     var centerVert = windowHeight / 2;
 }
 
+let yoff = 0;
+let trail = [];
+let cloudPos = 0;
+
 // draw() function is called repeatedly, it's the main animation loop
 function draw() {
-    background(220);    
-    // call a method on the instance
-    myInstance.myMethod();
+let maxY = 0;
+  background(135,206,235);
+  push();
+  if(cloudPos > 750){
+    cloudPos = -550;
+  }
+  translate(cloudPos+5,0);
+  cloudPos+=5;
+  drawCloud(50,100);
+  drawCloud(200, 200);
+  drawCloud(350, 150);
+  pop();
+  stroke(0,0,255);
+  noFill();
+  let xoff = 0;
+  for (let x1 = 0; x1 <= width; x1 += 10) {
+    let y1 = map(noise(xoff, yoff), 0, 1, 0, height);
+    trail.push({ x: x1, y: y1 });
+    //vertex(x1, y1);
+    xoff += 0.01;
+  }
+  yoff += 0.01;
+  
+  for (let i = 0; i < trail.length; i++) {
+    if(trail[i].x== 0){
+      beginShape();
+    }
+    if(trail[i].y > maxY){
+      maxY = trail[i].y;
+    }
+    //let alpha = map(i, 0, trail.length, 255, 0);
+    //fill(0, 150, 200, alpha);
+    vertex(trail[i].x,trail[i].y);
+    if(trail[i].x == 800){
+      endShape();
+    }
+  }
+  
+  while(trail.length > 4800){
+    trail.shift();
+  }
+  
+  fill(0,0,255);
+  rect(0, maxY, width, height-maxY);
 
-    // Put drawings here
-    var centerHorz = canvasContainer.width() / 2 - 125;
-    var centerVert = canvasContainer.height() / 2 - 125;
-    fill(234, 31, 81);
-    noStroke();
-    rect(centerHorz, centerVert, 250, 250);
-    fill(255);
-    textStyle(BOLD);
-    textSize(140);
-    text("p5*", centerHorz + 10, centerVert + 200);
 }
+
+function drawCloud(x, y) {
+    noStroke();
+    fill(255);
+  
+    // Main cloud body
+    ellipse(x, y, 60, 60);
+    ellipse(x + 25, y - 15, 50, 50);
+    ellipse(x - 25, y - 15, 40, 40);
+  }
 
 // mousePressed() function is called once after every time a mouse button is pressed
 function mousePressed() {
