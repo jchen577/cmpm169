@@ -2,7 +2,7 @@
 <html>
 <head>
 	<!-- This title is used for tabs and bookmarks -->
-	<title>Experiment X - Subject/Topic</title>
+	<title>Experiment 6 - Text and Grammar</title>
 
 	<!-- Use UTF character set, a good idea with any webpage -->
 	<meta charset="UTF-8" />
@@ -28,33 +28,163 @@
 	<!-- Style this page by changing the CSS in ../css/site.css or css/experiment.css -->
 	<main id="content">
 		<section>
-			<h1>Experiment X - Subject/Topic</h1>
+			<h1>Experiment 6 - Text and Grammar</h1>
 			<div class="minor-section">
 				<h2>Imitate</h2>
-				<p>To develop artistic creativity in coding, it can be helpful to start by studying and learning from existing examples. This might involve reviewing code written by others, analyzing successful techniques, or even copying and modifying code to better understand how it works. By imitating and learning from existing techniques and strategies, we can gain a better understanding of what has been done before and what is possible, and identify opportunities for improvement and innovation.</p>
-				<p>What code did you start with? (You don't need to provide the code itself, but where did you start?) Document this step briefly.</p>
+				<p>I started this experiment by taking one of the text examples from the class slides. The program took the user input and put it onto the screen.</p>
+				<p>One of the problems that I had with this example was that the mouse tracking made the program quite laggy. So my first step was to remove the mouse tracking feature and figure out what to add from there.I then decided to make the text start a new line once the characters began to go off the screen.
+				</p>
+				<p>Code:	    'use strict';
+
+
+					var letters = [];
+					var density = 2.5;
+					var ribbonWidth = 92;
+					var shapeColor;
+					var fontSize = 100;
+					var pathSimplification = 0;
+					var pathSampleFactor = 0.1;
+				   
+					var textTyped = 'hi';
+				   
+					var font;
+				   
+					function preload() {
+					  font = loadFont('data/PlayfulTime.ttf');
+					}
+				   
+					function setup() {
+					  createCanvas(windowWidth, windowHeight);
+					  noFill();
+					  strokeWeight(1);
+					  shapeColor = color(0);
+				   
+					  createLetters();
+					}
+				   
+					function draw() {
+					  background(255);
+				   
+					  translate(100, height*.25);
+				   
+					  pathSampleFactor = 0.1 * pow(0.02, mouseX / width);
+					  ribbonWidth = 10;
+				   
+					  for (var i = 0; i < letters.length; i++) {
+						letters[i].draw();
+					  }
+					}
+				   
+					function createLetters() {
+					  letters = [];
+					  var chars = textTyped.split('');
+				   
+					  var x = 0;
+					  var y = 0;
+					  var subbed = 0;
+					  for (var i = 0; i < chars.length; i++) {
+						if (i > 0) {
+						  var charsBefore = textTyped.substring(subbed, i);
+						  x = font.textBounds(charsBefore, 0, 0, fontSize).w +20;
+						  if(x + fontSize > windowWidth){
+							x= 0;
+							subbed = i;
+							y+= fontSize;
+						  }
+						}
+						var newLetter = new Letter(chars[i], x, y);
+						letters.push(newLetter);
+					  }
+					}
+				   
+					function Letter(char, x, y) {
+					  this.char = char;
+					  this.x = x;
+					  this.y = y;
+				   
+					  Letter.prototype.draw = function() {
+						var path = font.textToPoints(this.char, this.x, this.y, fontSize, {sampleFactor: pathSampleFactor});
+						stroke(shapeColor);
+				   
+						for (var d = 0; d < ribbonWidth; d += density) {
+						  beginShape();
+				   
+						  for (var i = 0; i < path.length; i++) {
+							var pos = path[i];
+							var nextPos = path[i + 1];
+				   
+							if (nextPos) {
+							  var p0 = createVector(pos.x, pos.y);
+							  var p1 = createVector(nextPos.x, nextPos.y);
+							  var v = p5.Vector.sub(p1, p0);
+							  v.normalize();
+							  v.rotate(HALF_PI);
+							  v.mult(d);
+							  var pneu = p5.Vector.add(p0, v);
+							  curveVertex(pneu.x, pneu.y);
+							}
+						  }
+				   
+						  endShape(CLOSE);
+						}
+					  };
+					}
+				   
+					function keyReleased() {
+					  if (keyCode == CONTROL) saveCanvas(gd.timestamp(), 'png');
+				   
+					  if (keyCode == LEFT_ARROW) density *= 1.25;
+					  if (keyCode == RIGHT_ARROW) density /= 1.25;
+				   
+					  if (keyCode == UP_ARROW) {
+						fontSize *= 1.1;
+						createLetters();
+					  }
+					  if (keyCode == DOWN_ARROW) {
+						fontSize /= 1.1;
+						createLetters();
+					  }
+				   
+					  if (keyCode == ENTER) createLetters();
+					}
+				   
+					function keyPressed() {
+					  if (keyCode == DELETE || keyCode == BACKSPACE) {
+						if (textTyped.length > 0) {
+						  textTyped = textTyped.substring(0, textTyped.length - 1);
+						  createLetters();
+						}
+					  }
+					}
+				   
+					function keyTyped() {
+					  if (keyCode >= 32) {
+						textTyped += key;
+						createLetters();
+					  }
+					}
+				</p>
 			</div>
 
 			<div class="minor-section">
 				<h2>Integrate</h2>
-				<p>After learning from existing techniques and strategies, we can build upon that foundation by combining elements from different sources. This might involve combining elements from different programming languages, using libraries or frameworks in new ways, or bringing together techniques from different fields or disciplines. By integrating and combining elements from different sources, we can create something new and unique.</p>
-				<p>How did you extend the code or combine with another technique to make something new? Document this step.</p>
+				<p>My first change in terms of creativity was to randomize the color of the letters.</p>
+				<p>At this point I wanted to make the experiment into more of a text writer now and I felt that randomizing the colors made it look more sylistic</p>
+				<p>Code:	stroke(random(0,255),random(0,255),random(0,255));
+				</p>
 			</div>
 
 			<div class="minor-section">
 				<h2>Innovate</h2>
-				<p>Finally, we can introduce new or original ideas to our coding process by thinking creatively and pushing the boundaries. This might involve developing entirely new techniques or approaches, or using existing techniques in new and creative ways. By innovating and introducing new ideas, we can create art that is truly groundbreaking.</p>
-				<p>How did you use the code as a jumping off point to create something truly unique and novel? Document this step thoroughly.</p>
+				<p>My first creative addition to this assignment was drawing a circle if the user had typed circle in any part of the letters. I then continued to do that for multiple other shapes such as square and triangle.</p>
+				<p>Once I realized that I could have the program do certain actions, so I wanted to add a weird trippy element by having the program rotate. I realized that this would be a really nice feature to implement easter eggs into games in the future. 
+				</p>
 			</div>
 
 			<div class="minor-section">
 				<h2>Reflection</h2>
-				<p>Each person that worked on the code should reflect on the process, the difficulties, and the successes of the experiment. Here's where you can put your reflections.</p>
-				<ul>
-					<li>What part of the project you contributed</li>
-					<li>A reflection on your work and the work of the team</li>
-					<li>Brief highs and lows</li>
-				</ul>
+				<p>This assignment was tough because I went into the assignment knowing almost nothing about how to use text and grammar. I had missed the 1st class of the week due to bus issues and that led to me not quite understanding what to do. It wasn’t that difficult to catch up however and I had fun looking at many of the text examples that the professor showed in class. I took one of the examples and used it for this experiment because I thought that the program could be more intuitive. The original program was very laggy because of the density and ribbon width. The easiest part of this experiment was definitely making the text rainbow because all it required was stroke() command.
+				</p>
 			</div>
 
 			<div class="minor-section">
@@ -66,6 +196,7 @@
 		</section>
 		<nav id="links">
 			<!-- Put links to other pages (including the homepage) here. -->
+			<li><a href="../index.html">Home</a></li>
 		</nav>
 	</main>
 </body>
