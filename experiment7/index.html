@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- This title is used for tabs and bookmarks -->
+	<title>Experiment 7 - Data Visualization and Networking</title>
+
+	<!-- Use UTF character set, a good idea with any webpage -->
+	<meta charset="UTF-8" />
+	<!-- Set viewport so page remains consistently scaled w narrow devices -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	<!-- Include CSS file, including a site-wide CSS and for this particular page -->
+	<link rel="stylesheet" type="text/css" href="../css/site.css">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+
+	<!-- Load jQuery library -->
+	<script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+	<!-- Load p5.js library -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.5.0/p5.js"></script>
+
+	<!-- Link to javascript files - DEFER waits until all elements are rendered -->
+	<!-- Use me for a JavaScript OOP Project -->
+	<script type="text/javascript" src="./js/project.js" DEFER></script>
+	<!-- Use me for a p5.js project -->
+	<script type="text/javascript" src="./js/sketch.js" DEFER></script>
+</head>
+<body>
+	<!-- Style this page by changing the CSS in ../css/site.css or css/experiment.css -->
+	<main id="content">
+		<section>
+			<h1>Experiment 7 - Data Visualization and Networking</h1>
+			<div class="minor-section">
+				<h2>Imitate</h2>
+				<p>I started this assignment by finding a p5.js example from the linkmix link that was sent after section. I settled on an earthquake visualizer made by Daniel Shiffman.
+				</p>
+				<p>Code: let angle = 0;
+
+
+					let table;
+					let r = 200;
+					
+					
+					let earth;
+					
+					
+					function preload() {
+					  earth = loadImage('earth.jpg');
+					  // table = loadTable(
+					  //   'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_day.csv',
+					  //   'header'
+					  // );
+					  // table = loadTable(
+					  //   'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.csv',
+					  //   'header'
+					  // );
+					  // This dataset is more medium sized, giving a decent number of
+					  // earthquakes to look at without slowing the sketch down as much.
+					  table = loadTable(
+						'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_month.csv',
+						'header'
+					  );
+					}
+					
+					
+					function setup() {
+					  createCanvas(600, 600, WEBGL);
+					}
+					
+					
+					function draw() {
+					  background(51);
+					  // We don't need to translate here, since WEBGL mode centers the view
+					  rotateY(angle);
+					  angle += 0.01;
+					
+					
+					  lights();
+					  fill(200);
+					  noStroke();
+					  // While the video shows that this doesn't work for texturing the
+					  // sphere, that's only true for Processing - in p5.js, it does work.
+					  texture(earth);
+					  sphere(r);
+					
+					
+					  // The rows are here a field instead of a method, and the getFloat()
+					  // method is replaced by getNum() since JS only has one number type.
+					  for (let row of table.rows) {
+						let lat = row.getNum('latitude');
+						let lon = row.getNum('longitude');
+						let mag = row.getNum('mag');
+					
+					
+						// original version
+						// let theta = radians(lat) + PI/2;
+					
+					
+						// fix: no + PI/2 needed, since latitude is between -180 and 180 deg
+						let theta = radians(lat);
+					
+					
+						let phi = radians(lon) + PI;
+					
+					
+						// original version
+						// let x = r * sin(theta) * cos(phi);
+						// let y = -r * sin(theta) * sin(phi);
+						// let z = r * cos(theta);
+					
+					
+						// fix: in OpenGL, y & z axes are flipped from math notation of spherical coordinates
+						let x = r * cos(theta) * cos(phi);
+						let y = -r * sin(theta);
+						let z = -r * cos(theta) * sin(phi);
+					
+					
+						let pos = createVector(x, y, z);
+					
+					
+						let h = pow(10, mag);
+						let maxh = pow(10, 7);
+						h = map(h, 0, maxh, 10, 100);
+						let xaxis = createVector(1, 0, 0);
+					
+					
+						// Processing's PVector.angleBetween has a range from 0 to PI,
+						// while p5.js' vector.angleBetween has a range from -PI to PI.
+						// This is because it includes information about which direction
+						// the angle goes (that is, if the first vector is the X axis,
+						// whether the angle to the second vector is upwards or downwards).
+						// We don't want the direction here, just the angle itself, so we
+						// take the absolute value of the returned value to get that.
+						let angleb = abs(xaxis.angleBetween(pos));
+					
+					
+						let raxis = xaxis.cross(pos);
+					
+					
+						push();
+						translate(x, y, z);
+						// In p5.js, the rotation axis is a vector object instead of x,y,z
+						rotate(angleb, raxis);
+						fill(255);
+						box(h, 5, 5);
+						pop();
+					  }
+					}
+					
+				</p>
+				<p>My first step was to try and learn how and what Daniel used to show the data, so I did this by changing the things that he had already added. I changed the planet picture so that the Earth would look different and changed the data points that the program was using.
+				</p>
+			</div>
+
+			<div class="minor-section">
+				<h2>Integrate</h2>
+				<p>After learning how the data and image would affect the visualization, I wanted to separate the severity of the earthquakes. I did this by reading the magnitude given by the data sheet and changing the color based on the magnitude.
+				</p>
+				<p>Code: angle = 0;
+
+
+					let table;
+					let r = 200;
+					
+					
+					let earth;
+					
+					
+					function preload() {
+					  earth = loadImage('earth2.jpg');
+					  // table = loadTable(
+					  //   'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_day.csv',
+					  //   'header'
+					  // );
+					  // table = loadTable(
+					  //   'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.csv',
+					  //   'header'
+					  // );
+					  // This dataset is more medium sized, giving a decent number of
+					  // earthquakes to look at without slowing the sketch down as much.
+					  table = loadTable(
+					'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_month.csv',
+						'header'
+					  );
+					}
+					
+					
+					function setup() {
+					  createCanvas(600, 600, WEBGL);
+					}
+					
+					
+					function draw() {
+					  background(51);
+					  // We don't need to translate here, since WEBGL mode centers the view
+					  rotateY(angle);
+					  angle += 0.01;
+					
+					
+					  lights();
+					  noStroke();
+					  // While the video shows that this doesn't work for texturing the
+					  // sphere, that's only true for Processing - in p5.js, it does work.
+					  texture(earth);
+					  sphere(r);
+					
+					
+					  // The rows are here a field instead of a method, and the getFloat()
+					  // method is replaced by getNum() since JS only has one number type.
+					  for (let row of table.rows) {
+						let lat = row.getNum('latitude');
+						let lon = row.getNum('longitude');
+						let mag = row.getNum('mag');
+					
+					
+						// original version
+						// let theta = radians(lat) + PI/2;
+					
+					
+						// fix: no + PI/2 needed, since latitude is between -180 and 180 deg
+						let theta = radians(lat);
+					
+					
+						let phi = radians(lon) + PI;
+					
+					
+						// original version
+						// let x = r * sin(theta) * cos(phi);
+						// let y = -r * sin(theta) * sin(phi);
+						// let z = r * cos(theta);
+					
+					
+						// fix: in OpenGL, y & z axes are flipped from math notation of spherical coordinates
+						let x = r * cos(theta) * cos(phi);
+						let y = -r * sin(theta);
+						let z = -r * cos(theta) * sin(phi);
+					
+					
+						let pos = createVector(x, y, z);
+					
+					
+						let h = pow(10, mag);
+						let maxh = pow(10, 7);
+						h = map(h, 0, maxh, 10, 100);
+						let xaxis = createVector(1, 0, 0);
+					
+					
+						// Processing's PVector.angleBetween has a range from 0 to PI,
+						// while p5.js' vector.angleBetween has a range from -PI to PI.
+						// This is because it includes information about which direction
+						// the angle goes (that is, if the first vector is the X axis,
+						// whether the angle to the second vector is upwards or downwards).
+						// We don't want the direction here, just the angle itself, so we
+						// take the absolute value of the returned value to get that.
+						let angleb = abs(xaxis.angleBetween(pos));
+					
+					
+						let raxis = xaxis.cross(pos);
+					
+					
+						push();
+						translate(x, y, z);
+						// In p5.js, the rotation axis is a vector object instead of x,y,z
+						rotate(angleb, raxis);
+						if(mag < 5){
+						  fill(135,206,235);
+						}
+						else if(mag >6){
+						  fill(255,0,0);
+						}
+						else{
+						  fill(200);
+						}
+						box(h, 5, 5);
+						pop();
+					  }
+					}
+					</p>
+
+			</div>
+
+			<div class="minor-section">
+				<h2>Innovate</h2>
+				<p>Following the color change of the previous visualization, I wanted to add some visualization of my own. I began looking for data sheets online that I could use but I had a hard time finding any. An idea that I had was to visualize where the pyramids were on the map with actual pyramids. I began that task by first placing a box on the location of the Pyramid of Giza.
+				</p>
+				<p>I tried to change the shape of the box to a pyramid using code from chatgpt, but it would lag the program due to all of the vertices used. 
+				</p>
+				<p>The reason for this was because I had put the function in the earthquake draw loop, but by the time I had realized I had already moved on to my next idea. My next idea was to map out important places and make their pillar scale depending on their size or importance. Since this was a custom idea I had to make my own spreadsheet with info which I had already done with the pyramids.
+				</p>
+			</div>
+
+			<div class="minor-section">
+				<h2>Reflection</h2>
+				<p> definitely felt like I was piggybacking off someone else’s work a lot for this assignment, but at the same time I was struck with a lack of creativity because I didn’t know what to do. Normally we would go through multiple assignments that we could imitate off of in class, but this time there were only a handful to get inspiration from. This experiment made me realize how reliant I was on getting examples from other people, and how I should be more wary about it in the future. One of the harder parts of this experiment was definitely finding the data that I needed to visualize. Initially I thought that I could use another data sheet online, but I didn’t realize how difficult it would be to find one without the proper know how. I ended up making my own data sheet instead which was super simple and minimalistic.
+				</p>
+			</div>
+
+			<div class="minor-section">
+				<h2>Results</h2>
+				<div id="canvas-container">
+					<!-- canvas will be added here -->
+				</div>
+			</div>
+		</section>
+		<nav id="links">
+			<!-- Put links to other pages (including the homepage) here. -->
+			<li><a href="../index.html">Home</a></li>
+		</nav>
+	</main>
+</body>
+</html>
