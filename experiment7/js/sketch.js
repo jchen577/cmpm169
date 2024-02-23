@@ -93,7 +93,7 @@ function draw(){
   rotateY(angle);
   angle += 0.01;
 
-  lights();
+  //lights(10,10,10);
   noStroke();
   // While the video shows that this doesn't work for texturing the
   // sphere, that's only true for Processing - in p5.js, it does work.
